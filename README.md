@@ -233,7 +233,6 @@ SET GLOBAL local_infile = 1;
 
 ```bash
 # 1. Create tables
-mysql --local-infile=1 -u ivan -p < 01_create_tables.sql
 
 # 2. Clean raw data
 python3 clean.py
@@ -249,9 +248,4 @@ python3 02_load.py
 db_data.md
 ```
 
----
 
-## 03_preview.py — What It Does
-
-Connects to MySQL and prints the first 10 rows of each table with row counts.
-Used to verify that all data loaded correctly after running `02_load.py`.
