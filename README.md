@@ -245,8 +245,8 @@ sed 's/T/ /' clean_clicks.csv > clean_clicks_fixed.csv
 # 4. Load into database
 python3 02_load.py
 
-# 5. Verify data loaded correctly
-python3 03_preview.py
+# 5. Verification of data in db
+db_data.md
 ```
 
 ---
