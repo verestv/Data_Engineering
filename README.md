@@ -7,7 +7,7 @@ They can be read with a small Python script read_csv.py (in our case we print th
 
 ## 2. Relational Schema
 
-The relational schema and an explanation of the design are provided in the file **db_schema.png**.
+The visual relational schema is provided in the file **db_schema.png**.
 
 ## 3. DDL Scripts
 
