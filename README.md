@@ -1,4 +1,4 @@
-# Project Setup & Data Pipeline
+# Project Setup
 
 ## 1. Datasets
 
