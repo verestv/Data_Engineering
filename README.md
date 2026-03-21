@@ -15,7 +15,7 @@ We create DDL scripts (SQL file) with additional explanation. -> init/ddl_sctips
 
 ## 4. Naming Conventions
 
-According to best practices, we use lowercase for table and column names, so we renamed the headers in both CSV files using a small script. change_csv_headers.py
+According to best practices, we use lowercase for table and column names, so we renamed the headers in both CSV files users.csv manually. ad_events - using a small script. change_csv_headers.py
 
 ## 5. Splitting CSV Files
 
