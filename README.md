@@ -11,7 +11,7 @@ The visual relational schema is provided in [db_schema.png](db_schema.png).
 
 ## 3. DDL Scripts
 
-DDL scripts with additional explanation are located in [init/ddl_scripts.sql](init/ddl_scripts.sql) — placed in the `init/` folder so they run automatically when the Docker image is created.
+DDL scripts with additional explanation are located in [ddl_scripts.sql](init/ddl_scripts.sql) — placed in the `init/` folder so they run automatically when the Docker image is created.
 
 ## 4. Naming Conventions
 
