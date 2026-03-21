@@ -68,6 +68,11 @@ IGNORE 1 LINES
 (campaign_id, targeting_criteria, target_interest_id, target_country_id);
 
 -- 8. Ad events
+-- Note: ad_events.csv has was_clicked as 'True'/'False' strings and
+-- click_timestamp as empty string '' for no click, which don't match the
+-- TINYINT(1) and DATETIME NULL columns. We load them into variables and
+-- convert on the fly (True/False -> 1/0, '' -> NULL) during LOAD DATA.
+
 LOAD DATA INFILE '/var/lib/mysql-files/ad_events.csv'
 INTO TABLE ad_events
 FIELDS TERMINATED BY ','
