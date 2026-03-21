@@ -1,17 +1,17 @@
 Here is your text, same content but formatted and cleaned up as Markdown (for `README.md`):
 
 ```markdown
-We have two datasets: `users.csv` and `ad_events_header_updated.csv`.  
+1) We have two datasets: `users.csv` and `ad_events_header_updated.csv`.  
 They can be read with a small Python script (in our case we print the first 15 rows to see the layout).
 
-The relational schema and an explanation of the design are provided in the file **relation_schema**.
+2) The relational schema and an explanation of the design are provided in the file **relation_schema**.
 
-Then we create DDL scripts (SQL file) with additional explanation.  
-According to best practices, we use lowercase for table and column names, so we renamed the headers in both CSV files using a small script.
+3) Then we create DDL scripts (SQL file) with additional explanation.  
 
-Next, we need to split the original CSV files into separate CSV files so that each one contains only the necessary data and columns for a specific table.  
+4) According to best practices, we use lowercase for table and column names, so we renamed the headers in both CSV files using a small script.
+
+5) Next, we need to split the original CSV files into separate CSV files so that each one contains only the necessary data and columns for a specific table.  
 For this we use the script: `build_csvs.py`.
-
 Example run and output:
 
 ```text
@@ -40,14 +40,13 @@ campaign_targeting.csv written with 1013 rows
 Building ad_events ...
 ad_events.csv written with 10000000 rows
 
-All CSVs generated. You can now LOAD DATA INFILE into MySQL.
-(venv) ivan@DESKTOP-HLUUP8P:~/Data_Eng$
+All CSVs generated. 
 ```
 
-After that we need to bring up the database.  
+6) After that we need to bring up the database.  
 There is a YAML file that creates the necessary MySQL Docker image/container.
 
-For better performance, we copy these generated CSV files into the Docker container.  
+7) For better performance, we copy these generated CSV files into the Docker container.  
 For example:
 
 ```bash
@@ -56,7 +55,7 @@ docker cp countries.csv adtech_mysql:/var/lib/mysql-files/countries.csv
 
 and repeat for each CSV file.
 
-Then each CSV file is loaded into its corresponding SQL table using `LOAD DATA INFILE`.  
+8) Then each CSV file is loaded into its corresponding SQL table using `LOAD DATA INFILE`. (Exact commands in this sql file: )
 In our case it is better to run these commands one by one directly in MySQL to monitor loading of each table.
 
 We can log in to MySQL in the container with:
@@ -65,5 +64,5 @@ We can log in to MySQL in the container with:
 docker exec -it adtech_mysql mysql -uroot -prootpass adtech_db
 ```
 
-From there we can run `SELECT` statements to verify that the data has been loaded successfully.
+9) `SELECT` statements to verify that the data has been loaded successfully:
 ```
