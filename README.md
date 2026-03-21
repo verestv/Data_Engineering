@@ -11,7 +11,7 @@ The visual relational schema is provided in the file **db_schema.png**.
 
 ## 3. DDL Scripts
 
-We create DDL scripts (SQL file) with additional explanation. -> ddl_sctips.sql
+We create DDL scripts (SQL file) with additional explanation. -> init/ddl_sctips.sql - in folder init to initialize when docker image is being created
 
 ## 4. Naming Conventions
 
