@@ -3,19 +3,19 @@
 ## 1. Datasets
 
 We have two datasets: `users.csv` and `ad_events_header_updated.csv`.
-They can be read with a small Python script (in our case we print the first 15 rows to see the layout).
+They can be read with a small Python script read_csv.py (in our case we print the first 15 rows to see the layout).
 
 ## 2. Relational Schema
 
-The relational schema and an explanation of the design are provided in the file **relation_schema**.
+The relational schema and an explanation of the design are provided in the file **db_schema.png**.
 
 ## 3. DDL Scripts
 
-We create DDL scripts (SQL file) with additional explanation.
+We create DDL scripts (SQL file) with additional explanation. -> ddl_sctips.sql
 
 ## 4. Naming Conventions
 
-According to best practices, we use lowercase for table and column names, so we renamed the headers in both CSV files using a small script.
+According to best practices, we use lowercase for table and column names, so we renamed the headers in both CSV files using a small script. change_csv_headers.py
 
 ## 5. Splitting CSV Files
 
@@ -51,7 +51,7 @@ All CSVs generated.
 
 ## 6. Database Setup
 
-After that we need to bring up the database. There is a YAML file that creates the necessary MySQL Docker image/container.
+After that we need to bring up the database. There is a docker-compose.yml file that creates the necessary MySQL Docker image/container. 
 
 ## 7. Copying CSV Files into Docker
 
@@ -65,7 +65,7 @@ Repeat this command for each CSV file.
 
 ## 8. Loading Data into SQL Tables
 
-Each CSV file is loaded into its corresponding SQL table using `LOAD DATA INFILE`. (Exact commands are in the SQL file.)
+Each CSV file is loaded into its corresponding SQL table using `LOAD DATA INFILE`. (Exact commands are in the SQL file load_all.sql)
 
 It is better to run these commands one by one directly in MySQL to monitor the loading of each table. Log in to MySQL inside the container with:
 
@@ -75,4 +75,4 @@ docker exec -it adtech_mysql mysql -uroot -prootpass adtech_db
 
 ## 9. Verifying Data
 
-Use `SELECT` statements to verify that the data has been loaded successfully.
+Use `SELECT` statements to verify that the data has been loaded successfully -> located in select_from_tables.txt
