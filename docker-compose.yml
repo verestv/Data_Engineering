@@ -1,18 +1,23 @@
 services:
   mysql:
-    image: mysql:latest
+    image: mysql:8.4
     container_name: adtech_mysql
     restart: unless-stopped
-    environment:
-      MYSQL_ROOT_PASSWORD: rootpass
-      MYSQL_DATABASE: adtech_db
-      MYSQL_USER: adtech_user
-      MYSQL_PASSWORD: adtech_pass
+    env_file:
+      - .env
     ports:
       - "3306:3306"
     volumes:
       - mysql_data:/var/lib/mysql
       - ./init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -u root -p$$MYSQL_ROOT_PASSWORD || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
 
 volumes:
   mysql_data:
+
+  
