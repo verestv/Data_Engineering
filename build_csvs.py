@@ -1,215 +1,200 @@
 import pandas as pd
 
-# =========================
-# 1) USERS SIDE
-# =========================
 
-print("Reading users.csv ...")
-users = pd.read_csv("users.csv", engine="pyarrow")  # user_id, age, gender, location, interests, signup_date
+# ─────────────────────────────────────────────────
+# Helper: generic lookup/dimension builder
+# ─────────────────────────────────────────────────
+def build_lookup(df: pd.DataFrame, col: str, id_col: str, name_col: str):
+    """
+    Creates a simple dimension table from one string column.
+    Returns (DataFrame, name->id dict).
+    """
+    dim = (
+        df[[col]]
+        .rename(columns={col: name_col})
+        .drop_duplicates()
+        .sort_values(name_col)
+        .reset_index(drop=True)
+    )
+    dim[id_col] = dim.index + 1
+    dim = dim[[id_col, name_col]]
+    return dim, dict(zip(dim[name_col], dim[id_col]))
 
-# ---------- DIM: countries ----------
-print("Building countries ...")
-countries = (
-    users[["location"]]
-    .rename(columns={"location": "country_name"})
-    .drop_duplicates()
-    .sort_values("country_name")
-    .reset_index(drop=True)
-)
-countries["country_id"] = countries.index + 1
-countries = countries[["country_id", "country_name"]]
-countries.to_csv("countries.csv", index=False)
-print(f"countries.csv written with {len(countries)} rows")
 
-# Map country_name -> id
-country_map = dict(zip(countries["country_name"], countries["country_id"]))
+# ─────────────────────────────────────────────────
+# USERS SIDE
+# ─────────────────────────────────────────────────
+def build_countries(users: pd.DataFrame):
+    dim, mapping = build_lookup(users, "location", "country_id", "country_name")
+    dim.to_csv("countries.csv", index=False)
+    print(f"countries.csv — {len(dim):>8,} rows")
+    return dim, mapping
 
-# ---------- DIM: interests ----------
-print("Building interests ...")
-users["interests"] = users["interests"].astype(str).str.split(",")
-exploded = users.explode("interests")
-exploded["interests"] = exploded["interests"].str.strip()
-exploded = exploded.dropna(subset=["interests"])
 
-interests = (
-    exploded[["interests"]]
-    .drop_duplicates()
-    .rename(columns={"interests": "interest_name"})
-    .sort_values("interest_name")
-    .reset_index(drop=True)
-)
-interests["interest_id"] = interests.index + 1
-interests = interests[["interest_id", "interest_name"]]
-interests.to_csv("interests.csv", index=False)
-print(f"interests.csv written with {len(interests)} rows")
+def build_interests(users: pd.DataFrame):
+    exploded = (
+        users.assign(interests=users["interests"].astype(str).str.split(","))
+        .explode("interests")
+    )
+    exploded["interests"] = exploded["interests"].str.strip()
 
-# Map interest_name -> id
-interest_map = dict(zip(interests["interest_name"], interests["interest_id"]))
+    dim, mapping = build_lookup(exploded, "interests", "interest_id", "interest_name")
+    dim.to_csv("interests.csv", index=False)
+    print(f"interests.csv — {len(dim):>8,} rows")
+    return dim, exploded, mapping
 
-# ---------- FACT: users ----------
-print("Building users_fact ...")
-users["country_id"] = users["location"].map(country_map)
-users_fact = users[["user_id", "age", "gender", "country_id", "signup_date"]]
-users_fact.to_csv("users_fact.csv", index=False)
-print(f"users_fact.csv written with {len(users_fact)} rows")
 
-# ---------- BRIDGE: user_interests ----------
-print("Building user_interests ...")
-ui = exploded[["user_id", "interests"]].rename(columns={"interests": "interest_name"})
-ui["interest_id"] = ui["interest_name"].map(interest_map)
-user_interests = ui[["user_id", "interest_id"]].drop_duplicates()
-user_interests.to_csv("user_interests.csv", index=False)
-print(f"user_interests.csv written with {len(user_interests)} rows")
+def build_users_fact(users: pd.DataFrame, country_map: dict):
+    users = users.copy()
+    users["country_id"] = users["location"].map(country_map)
 
-# =========================
-# 2) ADTECH SIDE
-# =========================
+    fact = users[["user_id", "age", "gender", "country_id", "signup_date"]]
+    fact.to_csv("users_fact.csv", index=False)
+    print(f"users_fact.csv — {len(fact):>8,} rows")
 
-print("Reading ad_events_header_updated.csv ...")
-ad = pd.read_csv("ad_events_header_updated.csv", engine="pyarrow")
 
-# Expected columns in ad:
-# event_id, advertiser_name, campaign_name, campaign_start_date, campaign_end_date,
-# targeting_criteria, target_interest, target_country, ad_slot_size,
-# user_id, device, served_country, event_timestamp, bid_amount, ad_cost,
-# was_clicked, click_timestamp, ad_revenue, budget, remaining_budget
+def build_user_interests(exploded: pd.DataFrame, interest_map: dict):
+    ui = (
+        exploded[["user_id", "interests"]]
+        .rename(columns={"interests": "interest_name"})
+        .assign(interest_id=lambda df: df["interest_name"].map(interest_map))
+        [["user_id", "interest_id"]]
+        .drop_duplicates()
+    )
+    ui.to_csv("user_interests.csv", index=False)
+    print(f"user_interests.csv — {len(ui):>8,} rows")
 
-# ---------- DIM: advertisers ----------
-print("Building advertisers ...")
-advertisers = (
-    ad[["advertiser_name"]]
-    .drop_duplicates()
-    .sort_values("advertiser_name")
-    .reset_index(drop=True)
-)
-advertisers["advertiser_id"] = advertisers.index + 1
-advertisers = advertisers[["advertiser_id", "advertiser_name"]]
-advertisers.to_csv("advertisers.csv", index=False)
-print(f"advertisers.csv written with {len(advertisers)} rows")
 
-adv_map = dict(zip(advertisers["advertiser_name"], advertisers["advertiser_id"]))
+# ─────────────────────────────────────────────────
+# ADTECH SIDE
+# ─────────────────────────────────────────────────
+def extend_lookup(existing_dim: pd.DataFrame, new_values, id_col: str, name_col: str):
+    """
+    Append values not yet in the dimension table and return updated mapping.
+    """
+    known = set(existing_dim[name_col])
+    missing = sorted(set(new_values) - known)
 
-# ---------- MAP countries & interests on adtech ----------
-print("Mapping countries and interests on adtech ...")
+    if missing:
+        start = existing_dim[id_col].max() + 1
+        extra = pd.DataFrame({
+            name_col: missing,
+            id_col: range(start, start + len(missing))
+        })[[id_col, name_col]]
 
-# If adtech has country names not present in users.csv, you may want to add them:
-# find missing served/target countries and append to countries before mapping
-served_missing = sorted(set(ad["served_country"]) - set(countries["country_name"]))
-target_missing = sorted(set(ad["target_country"]) - set(countries["country_name"]))
-all_missing_countries = sorted(set(served_missing + target_missing))
+        existing_dim = pd.concat([existing_dim, extra], ignore_index=True)
+        print(f" + {len(missing)} new {name_col} values added")
 
-if all_missing_countries:
-    print(f"Found {len(all_missing_countries)} new countries from adtech, appending ...")
-    # Start IDs after existing ones
-    start_id = countries["country_id"].max() + 1
-    new_c = pd.DataFrame({
-        "country_name": all_missing_countries,
-        "country_id": range(start_id, start_id + len(all_missing_countries))
-    })[["country_id", "country_name"]]
-    countries = pd.concat([countries, new_c], ignore_index=True)
-    countries = countries.sort_values("country_id").reset_index(drop=True)
-    countries.to_csv("countries.csv", index=False)  # overwrite with updated
-    country_map = dict(zip(countries["country_name"], countries["country_id"]))
+    return existing_dim, dict(zip(existing_dim[name_col], existing_dim[id_col]))
 
-# Map country names to IDs
-ad["target_country_id"] = ad["target_country"].map(country_map)
-ad["served_country_id"] = ad["served_country"].map(country_map)
 
-# Handle missing interests from adtech vs users side
-missing_interests = sorted(set(ad["target_interest"]) - set(interests["interest_name"]))
-if missing_interests:
-    print(f"Found {len(missing_interests)} new interests from adtech, appending ...")
-    start_id = interests["interest_id"].max() + 1
-    new_i = pd.DataFrame({
-        "interest_name": missing_interests,
-        "interest_id": range(start_id, start_id + len(missing_interests))
-    })[["interest_id", "interest_name"]]
-    interests = pd.concat([interests, new_i], ignore_index=True)
-    interests = interests.sort_values("interest_id").reset_index(drop=True)
-    interests.to_csv("interests.csv", index=False)  # overwrite with updated
-    interest_map = dict(zip(interests["interest_name"], interests["interest_id"]))
+def build_advertisers(ad: pd.DataFrame):
+    dim, mapping = build_lookup(ad, "advertiser_name", "advertiser_id", "advertiser_name")
+    dim.to_csv("advertisers.csv", index=False)
+    print(f"advertisers.csv — {len(dim):>8,} rows")
+    return dim, mapping
 
-ad["target_interest_id"] = ad["target_interest"].map(interest_map)
 
-# ---------- DIM/FACT: campaigns ----------
-print("Building campaigns ...")
-campaigns = (
-    ad[
-        [
+def build_campaigns(ad: pd.DataFrame, adv_map: dict):
+    """
+    remaining_budget is intentionally excluded — it is a derived field.
+    Compute with: budget - SUM(impressions.ad_cost)
+    """
+    camps = (
+        ad[[
             "advertiser_name",
             "campaign_name",
             "campaign_start_date",
             "campaign_end_date",
-            "budget",
-            "remaining_budget",
-        ]
-    ]
-    .drop_duplicates()
-    .reset_index(drop=True)
-)
+            "budget"
+        ]]
+        .drop_duplicates()
+        .reset_index(drop=True)
+    )
 
-campaigns["advertiser_id"] = campaigns["advertiser_name"].map(adv_map)
-campaigns["campaign_id"] = campaigns.index + 1
+    camps["advertiser_id"] = camps["advertiser_name"].map(adv_map)
+    camps["campaign_id"] = camps.index + 1
 
-campaigns_out = campaigns[
-    [
+    out = camps[[
         "campaign_id",
         "advertiser_id",
         "campaign_name",
         "campaign_start_date",
         "campaign_end_date",
-        "budget",
-        "remaining_budget",
-    ]
-]
-campaigns_out.to_csv("campaigns.csv", index=False)
-print(f"campaigns.csv written with {len(campaigns_out)} rows")
+        "budget"
+    ]]
+    out.to_csv("campaigns.csv", index=False)
+    print(f"campaigns.csv — {len(out):>8,} rows")
 
-# Map full campaign key -> campaign_id
-camp_key = (
-    campaigns["advertiser_id"].astype(str)
-    + "|"
-    + campaigns["campaign_name"]
-    + "|"
-    + campaigns["campaign_start_date"].astype(str)
-    + "|"
-    + campaigns["campaign_end_date"].astype(str)
-)
-campaign_map = dict(zip(camp_key, campaigns["campaign_id"]))
+    key = (
+        camps["advertiser_id"].astype(str) + "|"
+        + camps["campaign_name"] + "|"
+        + camps["campaign_start_date"].astype(str) + "|"
+        + camps["campaign_end_date"].astype(str)
+    )
 
-# Attach campaign_id to ad rows
-ad_key = (
-    ad["advertiser_name"].map(adv_map).astype(str)
-    + "|"
-    + ad["campaign_name"]
-    + "|"
-    + ad["campaign_start_date"].astype(str)
-    + "|"
-    + ad["campaign_end_date"].astype(str)
-)
-ad["campaign_id"] = ad_key.map(campaign_map)
+    return dict(zip(key, camps["campaign_id"]))
 
-# ---------- campaign_targeting ----------
-print("Building campaign_targeting ...")
-campaign_targeting = (
-    ad[
-        [
+
+def build_campaign_targeting(
+    ad: pd.DataFrame,
+    campaign_map: dict,
+    adv_map: dict,
+    interest_map: dict,
+    country_map: dict
+):
+    """
+    targeting_criteria (e.g. '25-45') is parsed into age_min / age_max.
+    This makes range queries possible and allows CHECK constraints.
+    """
+    ad = ad.copy()
+
+    ad["camp_key"] = (
+        ad["advertiser_name"].map(adv_map).astype(str) + "|"
+        + ad["campaign_name"] + "|"
+        + ad["campaign_start_date"].astype(str) + "|"
+        + ad["campaign_end_date"].astype(str)
+    )
+    ad["campaign_id"] = ad["camp_key"].map(campaign_map)
+
+    parsed = ad["targeting_criteria"].astype(str).str.extract(r"(\d+)[-–](\d+)")
+    ad["age_min"] = pd.to_numeric(parsed[0], errors="coerce").astype("Int64")
+    ad["age_max"] = pd.to_numeric(parsed[1], errors="coerce").astype("Int64")
+
+    ad["target_interest_id"] = ad["target_interest"].map(interest_map)
+    ad["target_country_id"] = ad["target_country"].map(country_map)
+
+    ct = (
+        ad[[
             "campaign_id",
-            "targeting_criteria",
+            "age_min",
+            "age_max",
             "target_interest_id",
-            "target_country_id",
-        ]
-    ]
-    .drop_duplicates(subset=["campaign_id"])
-    .reset_index(drop=True)
-)
-campaign_targeting.to_csv("campaign_targeting.csv", index=False)
-print(f"campaign_targeting.csv written with {len(campaign_targeting)} rows")
+            "target_country_id"
+        ]]
+        .drop_duplicates(subset=["campaign_id"])
+        .reset_index(drop=True)
+    )
 
-# ---------- ad_events ----------
-print("Building ad_events ...")
-ad_events = ad[
-    [
+    ct.to_csv("campaign_targeting.csv", index=False)
+    print(f"campaign_targeting.csv — {len(ct):>8,} rows")
+
+    return ad
+
+
+def build_impressions_and_clicks(ad: pd.DataFrame):
+    """
+    Split the original ad_events into two tables:
+    impressions — one row per ad served
+    clicks — one row per click (only rows where was_clicked == True)
+
+    was_clicked column is NOT written to either table — it is derived from
+    whether a row exists in the clicks table for a given impression_id.
+
+    ad_revenue belongs to clicks because revenue only occurs on a click.
+    remaining_budget is NOT written — it is a derived field.
+    """
+    impressions = ad[[
         "event_id",
         "campaign_id",
         "user_id",
@@ -219,12 +204,69 @@ ad_events = ad[
         "event_timestamp",
         "bid_amount",
         "ad_cost",
-        "was_clicked",
+    ]].rename(columns={"event_id": "impression_id"})
+
+    impressions.to_csv("impressions.csv", index=False)
+    print(f"impressions.csv — {len(impressions):>8,} rows")
+
+    clicked = ad[
+        ad["was_clicked"].astype(str).str.lower().isin(["true", "1"])
+    ].copy()
+
+    clicked["click_id"] = clicked["event_id"].astype(str) + "-click"
+
+    clicks = clicked[[
+        "click_id",
+        "event_id",
         "click_timestamp",
         "ad_revenue",
-    ]
-]
-ad_events.to_csv("ad_events.csv", index=False)
-print(f"ad_events.csv written with {len(ad_events)} rows")
+    ]].rename(columns={"event_id": "impression_id"})
 
-print("All CSVs generated. You can now LOAD DATA INFILE into MySQL.")
+    clicks.to_csv("clicks.csv", index=False)
+    print(f"clicks.csv — {len(clicks):>8,} rows")
+
+
+# ─────────────────────────────────────────────────
+# MAIN
+# ─────────────────────────────────────────────────
+def main():
+    print("\n=== Reading source files ===")
+    users = pd.read_csv("users.csv", engine="pyarrow")
+    ad = pd.read_csv("ad_events_header_updated.csv", engine="pyarrow")
+
+    print("\n=== Building dimensions from users.csv ===")
+    countries_dim, country_map = build_countries(users)
+    interests_dim, exploded, int_map = build_interests(users)
+    build_users_fact(users, country_map)
+    build_user_interests(exploded, int_map)
+
+    print("\n=== Extending dimensions with adtech data ===")
+    countries_dim, country_map = extend_lookup(
+        countries_dim,
+        list(ad["served_country"]) + list(ad["target_country"]),
+        "country_id",
+        "country_name",
+    )
+    countries_dim.to_csv("countries.csv", index=False)
+
+    interests_dim, int_map = extend_lookup(
+        interests_dim,
+        ad["target_interest"].tolist(),
+        "interest_id",
+        "interest_name",
+    )
+    interests_dim.to_csv("interests.csv", index=False)
+
+    ad["served_country_id"] = ad["served_country"].map(country_map)
+
+    print("\n=== Building adtech tables ===")
+    _, adv_map = build_advertisers(ad)
+    campaign_map = build_campaigns(ad, adv_map)
+    ad = build_campaign_targeting(ad, campaign_map, adv_map, int_map, country_map)
+    build_impressions_and_clicks(ad)
+
+    print("\n=== All CSVs generated. Ready for LOAD DATA INFILE. ===")
+
+
+if __name__ == "__main__":
+    main()
