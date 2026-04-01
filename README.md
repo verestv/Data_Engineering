@@ -256,67 +256,6 @@ docker exec -it adtech_mysql mysql -uroot -p adtech_db < /tmp/load_all.sql
 
 Each table prints a status line as it loads. The script prints `X load done` after each table so you can track progress.
 
-### 6. Verify data
 
-```bash
-docker exec -it adtech_mysql mysql -uroot -p adtech_db
-```
 
-```sql
-SELECT * FROM advertisers        LIMIT 10;
-SELECT * FROM countries          LIMIT 10;
-SELECT * FROM interests          LIMIT 10;
-SELECT * FROM users              LIMIT 10;
-SELECT * FROM user_interests     LIMIT 10;
-SELECT * FROM campaigns          LIMIT 10;
-SELECT * FROM campaign_targeting LIMIT 10;
-SELECT * FROM impressions        LIMIT 10;
-SELECT * FROM clicks             LIMIT 10;
-```
 
----
-
-## Key Queries
-
-### Click-Through Rate (CTR) per campaign
-
-```sql
-SELECT
-    c.campaign_name,
-    COUNT(i.impression_id)                                       AS impressions,
-    COUNT(cl.click_id)                                           AS clicks,
-    ROUND(COUNT(cl.click_id) * 100.0 / COUNT(i.impression_id), 4) AS ctr_pct
-FROM campaigns c
-LEFT JOIN impressions i  ON i.campaign_id    = c.campaign_id
-LEFT JOIN clicks cl      ON cl.impression_id = i.impression_id
-GROUP BY c.campaign_id, c.campaign_name
-ORDER BY ctr_pct DESC;
-```
-
-### Remaining budget per campaign (derived, not stored)
-
-```sql
-SELECT
-    c.campaign_name,
-    c.budget,
-    COALESCE(SUM(i.ad_cost), 0)             AS spent,
-    c.budget - COALESCE(SUM(i.ad_cost), 0)  AS remaining_budget
-FROM campaigns c
-LEFT JOIN impressions i ON i.campaign_id = c.campaign_id
-GROUP BY c.campaign_id, c.campaign_name, c.budget;
-```
-
-### Total advertiser spending
-
-```sql
-SELECT
-    a.advertiser_name,
-    SUM(i.ad_cost)     AS total_spend,
-    SUM(cl.ad_revenue) AS total_revenue
-FROM advertisers a
-JOIN campaigns   c  ON c.advertiser_id   = a.advertiser_id
-JOIN impressions i  ON i.campaign_id     = c.campaign_id
-LEFT JOIN clicks cl ON cl.impression_id  = i.impression_id
-GROUP BY a.advertiser_id, a.advertiser_name
-ORDER BY total_spend DESC;
-```
