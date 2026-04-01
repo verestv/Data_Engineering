@@ -2,103 +2,134 @@ USE adtech_db;
 
 SET FOREIGN_KEY_CHECKS = 0;
 
--- 1. Countries
+-- 1. countries
 LOAD DATA INFILE '/var/lib/mysql-files/countries.csv'
 INTO TABLE countries
-FIELDS TERMINATED BY ','
-OPTIONALLY ENCLOSED BY '"'
+FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '"'
 LINES TERMINATED BY '\n'
 IGNORE 1 LINES
 (country_id, country_name);
 
--- 2. Interests
+SELECT 'countries load done' AS status;
+
+
+-- 2. interests
 LOAD DATA INFILE '/var/lib/mysql-files/interests.csv'
 INTO TABLE interests
-FIELDS TERMINATED BY ','
-OPTIONALLY ENCLOSED BY '"'
+FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '"'
 LINES TERMINATED BY '\n'
 IGNORE 1 LINES
 (interest_id, interest_name);
 
--- 3. Advertisers
+SELECT 'interests load done' AS status;
+
+
+-- 3. advertisers
 LOAD DATA INFILE '/var/lib/mysql-files/advertisers.csv'
 INTO TABLE advertisers
-FIELDS TERMINATED BY ','
-OPTIONALLY ENCLOSED BY '"'
+FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '"'
 LINES TERMINATED BY '\n'
 IGNORE 1 LINES
 (advertiser_id, advertiser_name);
 
--- 4. Users
+SELECT 'advertisers load done' AS status;
+
+
+-- 4. users
 LOAD DATA INFILE '/var/lib/mysql-files/users_fact.csv'
 INTO TABLE users
-FIELDS TERMINATED BY ','
-OPTIONALLY ENCLOSED BY '"'
+FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '"'
 LINES TERMINATED BY '\n'
 IGNORE 1 LINES
 (user_id, age, gender, country_id, signup_date);
 
--- 5. User interests
+SELECT 'users load done' AS status;
+
+
+-- 5. user_interests
 LOAD DATA INFILE '/var/lib/mysql-files/user_interests.csv'
 INTO TABLE user_interests
-FIELDS TERMINATED BY ','
-OPTIONALLY ENCLOSED BY '"'
+FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '"'
 LINES TERMINATED BY '\n'
 IGNORE 1 LINES
 (user_id, interest_id);
 
--- 6. Campaigns
+SELECT 'user_interests load done' AS status;
+
+
+-- 6. campaigns
 LOAD DATA INFILE '/var/lib/mysql-files/campaigns.csv'
 INTO TABLE campaigns
-FIELDS TERMINATED BY ','
-OPTIONALLY ENCLOSED BY '"'
-LINES TERMINATED BY '\n'
-IGNORE 1 LINES
-(campaign_id, advertiser_id, campaign_name,
- campaign_start_date, campaign_end_date,
- budget, remaining_budget);
-
--- 7. Campaign targeting
-LOAD DATA INFILE '/var/lib/mysql-files/campaign_targeting.csv'
-INTO TABLE campaign_targeting
-FIELDS TERMINATED BY ','
-OPTIONALLY ENCLOSED BY '"'
-LINES TERMINATED BY '\n'
-IGNORE 1 LINES
-(campaign_id, targeting_criteria, target_interest_id, target_country_id);
-
--- 8. Ad events
--- Note: ad_events.csv has was_clicked as 'True'/'False' strings and
--- click_timestamp as empty string '' for no click, which don't match the
--- TINYINT(1) and DATETIME NULL columns. We load them into variables and
--- convert on the fly (True/False -> 1/0, '' -> NULL) during LOAD DATA.
-
-LOAD DATA INFILE '/var/lib/mysql-files/ad_events.csv'
-INTO TABLE ad_events
-FIELDS TERMINATED BY ','
-OPTIONALLY ENCLOSED BY '"'
+FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '"'
 LINES TERMINATED BY '\n'
 IGNORE 1 LINES
 (
-  event_id,
-  campaign_id,
-  user_id,
-  ad_slot_size,
-  device,
-  served_country_id,
-  event_timestamp,
-  bid_amount,
-  ad_cost,
-  @was_clicked_str,
-  @click_ts_str,
-  ad_revenue
+    campaign_id,
+    advertiser_id,
+    campaign_name,
+    campaign_start_date,
+    campaign_end_date,
+    budget
+);
+
+SELECT 'campaigns load done' AS status;
+
+
+-- 7. campaign_targeting
+LOAD DATA INFILE '/var/lib/mysql-files/campaign_targeting.csv'
+INTO TABLE campaign_targeting
+FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '"'
+LINES TERMINATED BY '\n'
+IGNORE 1 LINES
+(
+    campaign_id,
+    age_min,
+    age_max,
+    target_interest_id,
+    target_country_id
+);
+
+SELECT 'campaign_targeting load done' AS status;
+
+
+-- 8. impressions
+LOAD DATA INFILE '/var/lib/mysql-files/impressions.csv'
+INTO TABLE impressions
+FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '"'
+LINES TERMINATED BY '\n'
+IGNORE 1 LINES
+(
+    impression_id,
+    campaign_id,
+    user_id,
+    ad_slot_size,
+    device,
+    served_country_id,
+    event_timestamp,
+    bid_amount,
+    ad_cost
+);
+
+SELECT 'impressions load done' AS status;
+
+
+-- 9. clicks
+LOAD DATA INFILE '/var/lib/mysql-files/clicks.csv'
+INTO TABLE clicks
+FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '"'
+LINES TERMINATED BY '\n'
+IGNORE 1 LINES
+(
+    @click_id_raw,
+    impression_id,
+    @click_ts_str,
+    ad_revenue
 )
-SET was_clicked = CASE
-        WHEN @was_clicked_str = 'True'  THEN 1
-        WHEN @was_clicked_str = 'False' THEN 0
-        ELSE NULL
-    END,
+SET 
+    click_id = REPLACE(@click_id_raw, '-click', ''),
     click_timestamp = NULLIF(@click_ts_str, '');
+
+SELECT 'clicks load done' AS status;
 
 
 SET FOREIGN_KEY_CHECKS = 1;
