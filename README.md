@@ -82,19 +82,9 @@ Or open the file and run queries individually.
 
 ---
 
-## Screenshots of query results
+## Query results
 
-> _Screenshots will be added here after running the queries._
-
-| Query | Screenshot |
-|-------|------------|
-| Q1 — Top 5 campaigns by CTR | _(coming soon)_ |
-| Q2 — Top advertiser spenders | _(coming soon)_ |
-| Q3 — CPC and CPM | _(coming soon)_ |
-| Q4 — Top countries by revenue | _(coming soon)_ |
-| Q5 — Top 10 users | _(coming soon)_ |
-| Q6 — Budget consumption | _(coming soon)_ |
-| Q7 — CTR by device | _(coming soon)_ |
+> query results are in sql_results_from_queries.txt
 
 ---
 
@@ -105,6 +95,7 @@ The script connects to MySQL, runs all 7 queries, and exports results.
 ### Install dependencies
 
 ```bash
+activate venv, then:
 pip install mysql-connector-python pandas
 ```
 
