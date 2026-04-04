@@ -64,6 +64,13 @@ Or inside the MySQL shell:
 SOURCE /tmp/indexes.sql;
 ```
 
+**Important:** Set the date window at the top of the session first:
+
+```sql
+SET @start_date = '2024-11-01'; 
+SET @end_date   = '2024-11-30';
+```
+
 ### 2. Run queries.sql
 
 ```bash
@@ -71,56 +78,7 @@ docker cp queries.sql adtech_mysql:/tmp/queries.sql
 docker exec -it adtech_mysql mysql -uroot -p adtech_db < /tmp/queries.sql
 ```
 
-Or open the file in MySQL Workbench / DBeaver and run queries individually.
-
-**Important:** Set the date window at the top of the session first:
-
-```sql
-SET @start_date = '2024-01-01';
-SET @end_date   = '2024-01-31';
-```
-
----
-
-## SQL Queries
-
-### Q1 — Top 5 campaigns by CTR
-Finds which campaigns are most effective at getting users to click.
-CTR = clicks / impressions × 100.
-
-### Q2 — Top advertiser spenders with ROAS
-Shows which advertisers spend the most and whether they get a return.
-ROAS = revenue / spend. ROAS > 1 means profitable.
-
-### Q3 — CPC and CPM per campaign
-Efficiency metrics per campaign.
-CPC = spend / clicks. CPM = spend / impressions × 1000.
-
-### Q4 — Top countries by ad revenue
-Revenue grouped by the country where the impression was served.
-
-### Q5 — Top 10 most engaged users
-Users with the most clicks, with their age, gender, and country.
-
-### Q6 — Campaigns above 80% budget consumed
-Budget consumption is a lifetime metric (not windowed).
-Remaining budget = `budget - SUM(impressions.ad_cost)`.
-
-### Q7 — CTR by device type
-Compares CTR, avg CPC, and impression share across device types (mobile, desktop, tablet).
-Uses a window function to compute each device's share of total impressions.
-
----
-
-## Metric formulas
-
-| Metric | Formula |
-|--------|---------|
-| CTR | `COUNT(clicks) / COUNT(impressions) × 100` |
-| CPC | `SUM(ad_cost) / COUNT(clicks)` |
-| CPM | `SUM(ad_cost) / COUNT(impressions) × 1000` |
-| ROAS | `SUM(ad_revenue) / SUM(ad_cost)` |
-| Remaining budget | `budget - SUM(impressions.ad_cost)` |
+Or open the file and run queries individually.
 
 ---
 
@@ -165,23 +123,6 @@ export DB_NAME=adtech_db
 python3 report.py
 ```
 
-### Output
-
-The script prints each query result to the terminal and saves files to `reports/`:
-
-```
-============================================================
-  Q1 — Top 5 Campaigns by CTR
-============================================================
- campaign_name  advertiser_name  impressions  clicks  ctr_pct
- ...
-  -> 5 rows saved to reports/q1_top_ctr_campaigns.csv
-
-...
-
-Full JSON report -> reports/report_20240101_120000.json
-Done.
-```
 
 ### Output files
 
@@ -198,15 +139,3 @@ Done.
 
 ---
 
-## Index strategy
-
-All indexes are on the `impressions` table (the largest table):
-
-| Index | Columns | Used in |
-|-------|---------|---------|
-| `idx_imp_timestamp` | `event_timestamp` | All queries |
-| `idx_imp_campaign_ts` | `campaign_id, event_timestamp` | Q1, Q2, Q3, Q6 |
-| `idx_imp_device_ts` | `device, event_timestamp` | Q7 |
-| `idx_imp_country_ts` | `served_country_id, event_timestamp` | Q4 |
-| `idx_imp_user` | `user_id` | Q5 |
-| `idx_clicks_imp_id` | `clicks(impression_id)` | All (JOIN) |
