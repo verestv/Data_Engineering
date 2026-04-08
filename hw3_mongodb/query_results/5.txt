@@ -1,0 +1,35 @@
+adtech_db> db.user_engagements.aggregate([
+|   { $match: { _id: 10 } },
+|   { $unwind: "$impressions" },
+|   { $unwind: "$impressions.clicks" },
+|   {
+|     $group: {
+|       _id: "$impressions.campaign_name",
+|       click_count: { $sum: 1 },
+|       last_click: { $max: "$impressions.clicks.click_timestamp" }
+|     }
+|   },
+|   { $sort: { click_count: -1, last_click: -1 } },
+|   { $limit: 3 },
+|   {
+|     $project: {
+|       _id: 0,
+|       category: "$_id",
+|       click_count: 1,
+|       last_click: 1
+|     }
+|   }
+| ]);
+[
+  {
+    click_count: 1,
+    last_click: ISODate('2024-11-05T14:34:59.000Z'),
+    category: 'Campaign_810'
+  },
+  {
+    click_count: 1,
+    last_click: ISODate('2024-10-07T11:09:51.000Z'),
+    category: 'Campaign_458'
+  }
+]
+adtech_db> 

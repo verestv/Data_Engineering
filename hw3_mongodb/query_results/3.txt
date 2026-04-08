@@ -1,0 +1,167 @@
+adtech_db> const START_DATE = new Date("2024-11-01T00:00:00Z");
+| const END_DATE   = new Date("2024-11-02T00:00:00Z");
+| const advertiserName = "Advertiser_37";
+| 
+| db.user_engagements.aggregate([
+|   { $match: { "impressions.advertiser_name": advertiserName } },
+|   { $unwind: "$impressions" },
+|   { $match: { "impressions.advertiser_name": advertiserName } },
+|   { $unwind: "$impressions.clicks" },
+|   {
+|     $match: {
+|       "impressions.clicks.click_timestamp": {
+|         $gte: START_DATE,
+|         $lt: END_DATE
+|       }
+|     }
+|   },
+|   {
+|     $group: {
+|       _id: {
+|         campaign_id: "$impressions.campaign_id",
+|         campaign_name: "$impressions.campaign_name",
+|         hour: {
+|           $dateTrunc: {
+|             date: "$impressions.clicks.click_timestamp",
+|             unit: "hour"
+|           }
+|         }
+|       },
+|       click_count: { $sum: 1 }
+|     }
+|   },
+|   {
+|     $project: {
+|       _id: 0,
+|       campaign_id: "$_id.campaign_id",
+|       campaign_name: "$_id.campaign_name",
+|       hour: "$_id.hour",
+|       click_count: 1
+|     }
+|   },
+|   { $sort: { campaign_id: 1, hour: 1 } }
+| ]);
+[
+  {
+    click_count: 1,
+    campaign_id: 168,
+    campaign_name: 'Campaign_358',
+    hour: ISODate('2024-11-01T00:00:00.000Z')
+  },
+  {
+    click_count: 1,
+    campaign_id: 168,
+    campaign_name: 'Campaign_358',
+    hour: ISODate('2024-11-01T02:00:00.000Z')
+  },
+  {
+    click_count: 1,
+    campaign_id: 168,
+    campaign_name: 'Campaign_358',
+    hour: ISODate('2024-11-01T03:00:00.000Z')
+  },
+  {
+    click_count: 3,
+    campaign_id: 168,
+    campaign_name: 'Campaign_358',
+    hour: ISODate('2024-11-01T04:00:00.000Z')
+  },
+  {
+    click_count: 2,
+    campaign_id: 168,
+    campaign_name: 'Campaign_358',
+    hour: ISODate('2024-11-01T08:00:00.000Z')
+  },
+  {
+    click_count: 1,
+    campaign_id: 168,
+    campaign_name: 'Campaign_358',
+    hour: ISODate('2024-11-01T10:00:00.000Z')
+  },
+  {
+    click_count: 1,
+    campaign_id: 168,
+    campaign_name: 'Campaign_358',
+    hour: ISODate('2024-11-01T12:00:00.000Z')
+  },
+  {
+    click_count: 1,
+    campaign_id: 168,
+    campaign_name: 'Campaign_358',
+    hour: ISODate('2024-11-01T13:00:00.000Z')
+  },
+  {
+    click_count: 1,
+    campaign_id: 168,
+    campaign_name: 'Campaign_358',
+    hour: ISODate('2024-11-01T14:00:00.000Z')
+  },
+  {
+    click_count: 1,
+    campaign_id: 168,
+    campaign_name: 'Campaign_358',
+    hour: ISODate('2024-11-01T15:00:00.000Z')
+  },
+  {
+    click_count: 4,
+    campaign_id: 168,
+    campaign_name: 'Campaign_358',
+    hour: ISODate('2024-11-01T16:00:00.000Z')
+  },
+  {
+    click_count: 1,
+    campaign_id: 168,
+    campaign_name: 'Campaign_358',
+    hour: ISODate('2024-11-01T17:00:00.000Z')
+  },
+  {
+    click_count: 1,
+    campaign_id: 168,
+    campaign_name: 'Campaign_358',
+    hour: ISODate('2024-11-01T18:00:00.000Z')
+  },
+  {
+    click_count: 1,
+    campaign_id: 168,
+    campaign_name: 'Campaign_358',
+    hour: ISODate('2024-11-01T20:00:00.000Z')
+  },
+  {
+    click_count: 1,
+    campaign_id: 168,
+    campaign_name: 'Campaign_358',
+    hour: ISODate('2024-11-01T22:00:00.000Z')
+  },
+  {
+    click_count: 1,
+    campaign_id: 168,
+    campaign_name: 'Campaign_358',
+    hour: ISODate('2024-11-01T23:00:00.000Z')
+  },
+  {
+    click_count: 3,
+    campaign_id: 229,
+    campaign_name: 'Campaign_348',
+    hour: ISODate('2024-11-01T00:00:00.000Z')
+  },
+  {
+    click_count: 2,
+    campaign_id: 229,
+    campaign_name: 'Campaign_348',
+    hour: ISODate('2024-11-01T01:00:00.000Z')
+  },
+  {
+    click_count: 1,
+    campaign_id: 229,
+    campaign_name: 'Campaign_348',
+    hour: ISODate('2024-11-01T05:00:00.000Z')
+  },
+  {
+    click_count: 2,
+    campaign_id: 229,
+    campaign_name: 'Campaign_348',
+    hour: ISODate('2024-11-01T07:00:00.000Z')
+  }
+]
+Type "it" for more
+adtech_db>

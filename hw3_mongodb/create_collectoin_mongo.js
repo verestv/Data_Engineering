@@ -5,14 +5,13 @@ db.createCollection("user_engagements", {
       required: ["_id", "age", "gender", "country", "signup_date", "interests", "impressions"],
       properties: {
         _id: {
-          bsonType: "long",
           description: "user_id from MySQL — reused as primary key"
         },
         age: {
           bsonType: "int",
           minimum: 1,
           maximum: 150,
-          description: "User age, must be 1-150"
+          description: "User age"
         },
         gender: {
           bsonType: "string",
@@ -20,16 +19,16 @@ db.createCollection("user_engagements", {
         },
         country: {
           bsonType: "string",
-          description: "Denormalized country name (not ID)"
+          description: "Denormalized country name"
         },
         signup_date: {
           bsonType: "date",
-          description: "When the user registered"
+          description: "Registration date"
         },
         interests: {
           bsonType: "array",
           items: { bsonType: "string" },
-          description: "List of user interests — replaces MySQL bridge table"
+          description: "User interests — replaces MySQL bridge table"
         },
         impressions: {
           bsonType: "array",
@@ -38,64 +37,25 @@ db.createCollection("user_engagements", {
             bsonType: "object",
             required: ["impression_id", "campaign_id", "campaign_name", "advertiser_name", "timestamp"],
             properties: {
-              impression_id: {
-                bsonType: "string",
-                description: "UUID from impressions table"
-              },
-              campaign_id: {
-                bsonType: "long",
-                description: "Campaign FK"
-              },
-              campaign_name: {
-                bsonType: "string",
-                description: "Denormalized from campaigns table"
-              },
-              advertiser_name: {
-                bsonType: "string",
-                description: "Denormalized from advertisers table"
-              },
-              ad_slot_size: {
-                bsonType: "string",
-                description: "Ad dimensions e.g. 300x250"
-              },
-              device: {
-                bsonType: "string",
-                description: "mobile / desktop / tablet"
-              },
-              country_served: {
-                bsonType: "string",
-                description: "Country where ad was shown"
-              },
-              timestamp: {
-                bsonType: "date",
-                description: "When the impression was served"
-              },
-              bid_amount: {
-                bsonType: "double",
-                description: "Bid price for this impression"
-              },
-              ad_cost: {
-                bsonType: "double",
-                description: "Actual cost charged"
-              },
+              impression_id:   { bsonType: "string" },
+              campaign_id:     { bsonType: "int" },
+              campaign_name:   { bsonType: "string" },
+              advertiser_name: { bsonType: "string" },
+              ad_slot_size:    { bsonType: "string" },
+              device:          { bsonType: "string" },
+              country_served:  { bsonType: "string" },
+              timestamp:       { bsonType: "date" },
+              bid_amount:      { bsonType: "double" },
+              ad_cost:         { bsonType: "double" },
               clicks: {
                 bsonType: "array",
-                description: "Click events for this impression (empty array if no click)",
+                description: "Click events (empty array if no click)",
                 items: {
                   bsonType: "object",
                   properties: {
-                    click_id: {
-                      bsonType: "string",
-                      description: "Click UUID"
-                    },
-                    click_timestamp: {
-                      bsonType: "date",
-                      description: "When the click happened"
-                    },
-                    ad_revenue: {
-                      bsonType: "double",
-                      description: "Revenue generated from this click"
-                    }
+                    click_id:        { bsonType: "string" },
+                    click_timestamp: { bsonType: "date" },
+                    ad_revenue:      { bsonType: "double" }
                   }
                 }
               }
@@ -105,6 +65,6 @@ db.createCollection("user_engagements", {
       }
     }
   },
-  validationLevel: "strict",
-  validationAction: "error"
-})
+  validationLevel: "moderate",
+  validationAction: "warn"
+});

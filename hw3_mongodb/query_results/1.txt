@@ -1,0 +1,516 @@
+adtech_db> 
+| db.user_engagements.find(
+|   { _id: 10 },
+|   {
+|     _id: 1,
+|     age: 1,
+|     gender: 1,
+|     country: 1,
+|     signup_date: 1,
+|     interests: 1,
+|     impressions: 1
+|   }
+| ).pretty();
+[
+  {
+    _id: 10,
+    age: 60,
+    gender: 'Female',
+    country: 'USA',
+    signup_date: ISODate('2022-08-04T00:00:00.000Z'),
+    interests: [ 'Gaming', 'Sports' ],
+    impressions: [
+      {
+        impression_id: '6fdfb717-0457-489a-8615-899cf9770193',
+        campaign_id: 585,
+        campaign_name: 'Campaign_495',
+        advertiser_name: 'Advertiser_50',
+        ad_slot_size: '300x250',
+        device: 'Mobile',
+        country_served: 'USA',
+        timestamp: ISODate('2024-10-26T23:06:46.000Z'),
+        bid_amount: 2.73,
+        ad_cost: 2.17,
+        clicks: []
+      },
+      {
+        impression_id: 'b593f583-e15b-4966-ba16-81232175c0b5',
+        campaign_id: 476,
+        campaign_name: 'Campaign_458',
+        advertiser_name: 'Advertiser_47',
+        ad_slot_size: '300x250',
+        device: 'Mobile',
+        country_served: 'USA',
+        timestamp: ISODate('2024-10-07T11:06:17.000Z'),
+        bid_amount: 1.87,
+        ad_cost: 1.59,
+        clicks: [
+          {
+            click_id: 'b593f583-e15b-4966-ba16-81232175c0b5-click',
+            click_timestamp: ISODate('2024-10-07T11:09:51.000Z'),
+            ad_revenue: 3.26
+          }
+        ]
+      },
+      {
+        impression_id: '682ee5a8-40b4-45cb-a2d5-f4a4da8c50fd',
+        campaign_id: 975,
+        campaign_name: 'Campaign_944',
+        advertiser_name: 'Advertiser_94',
+        ad_slot_size: '728x90',
+        device: 'Desktop',
+        country_served: 'USA',
+        timestamp: ISODate('2024-11-14T22:25:37.000Z'),
+        bid_amount: 1.25,
+        ad_cost: 1.06,
+        clicks: []
+      },
+      {
+        impression_id: 'ac918c9f-e217-49ce-a18e-98d8f374763c',
+        campaign_id: 930,
+        campaign_name: 'Campaign_31',
+        advertiser_name: 'Advertiser_4',
+        ad_slot_size: '300x250',
+        device: 'Tablet',
+        country_served: 'USA',
+        timestamp: ISODate('2024-10-24T12:50:15.000Z'),
+        bid_amount: 1.08,
+        ad_cost: 0.95,
+        clicks: []
+      },
+      {
+        impression_id: 'cc4f4bc2-5c63-4952-9f61-88e70b82d49d',
+        campaign_id: 842,
+        campaign_name: 'Campaign_281',
+        advertiser_name: 'Advertiser_30',
+        ad_slot_size: '300x250',
+        device: 'Mobile',
+        country_served: 'USA',
+        timestamp: ISODate('2024-10-18T19:58:04.000Z'),
+        bid_amount: 1.92,
+        ad_cost: 1.59,
+        clicks: []
+      },
+      {
+        impression_id: '29f40828-b9a1-4b01-be22-d4d5e553baa7',
+        campaign_id: 58,
+        campaign_name: 'Campaign_837',
+        advertiser_name: 'Advertiser_84',
+        ad_slot_size: '728x90',
+        device: 'Tablet',
+        country_served: 'USA',
+        timestamp: ISODate('2024-12-06T07:33:07.000Z'),
+        bid_amount: 2.58,
+        ad_cost: 1.83,
+        clicks: []
+      },
+      {
+        impression_id: '369e774d-e5cd-416f-8c75-f2410b1c87d6',
+        campaign_id: 91,
+        campaign_name: 'Campaign_768',
+        advertiser_name: 'Advertiser_76',
+        ad_slot_size: '160x600',
+        device: 'Desktop',
+        country_served: 'USA',
+        timestamp: ISODate('2024-10-18T06:26:44.000Z'),
+        bid_amount: 4.58,
+        ad_cost: 4.05,
+        clicks: []
+      },
+      {
+        impression_id: 'dc722bd8-8763-4a62-8c4e-d5b59088e0b4',
+        campaign_id: 773,
+        campaign_name: 'Campaign_980',
+        advertiser_name: 'Advertiser_98',
+        ad_slot_size: '728x90',
+        device: 'Tablet',
+        country_served: 'USA',
+        timestamp: ISODate('2024-10-19T05:19:23.000Z'),
+        bid_amount: 3.3,
+        ad_cost: 2.65,
+        clicks: []
+      },
+      {
+        impression_id: '37fa484c-fe82-426c-b181-1861bc2a15ef',
+        campaign_id: 709,
+        campaign_name: 'Campaign_516',
+        advertiser_name: 'Advertiser_52',
+        ad_slot_size: '300x250',
+        device: 'Mobile',
+        country_served: 'USA',
+        timestamp: ISODate('2024-10-30T23:11:15.000Z'),
+        bid_amount: 2.09,
+        ad_cost: 1.88,
+        clicks: []
+      },
+      {
+        impression_id: '1499321f-f859-4e80-a2dc-a2fc1ff2563c',
+        campaign_id: 228,
+        campaign_name: 'Campaign_263',
+        advertiser_name: 'Advertiser_28',
+        ad_slot_size: '300x250',
+        device: 'Desktop',
+        country_served: 'USA',
+        timestamp: ISODate('2024-10-29T17:56:01.000Z'),
+        bid_amount: 3.04,
+        ad_cost: 2.37,
+        clicks: []
+      },
+      {
+        impression_id: '3da875bb-33fd-4224-96dc-e57f59dbdfdb',
+        campaign_id: 432,
+        campaign_name: 'Campaign_440',
+        advertiser_name: 'Advertiser_45',
+        ad_slot_size: '160x600',
+        device: 'Mobile',
+        country_served: 'USA',
+        timestamp: ISODate('2024-10-27T17:57:09.000Z'),
+        bid_amount: 2.16,
+        ad_cost: 1.67,
+        clicks: []
+      },
+      {
+        impression_id: 'bea06182-3e71-46fe-9c5f-6c6c7bc96220',
+        campaign_id: 682,
+        campaign_name: 'Campaign_44',
+        advertiser_name: 'Advertiser_6',
+        ad_slot_size: '160x600',
+        device: 'Mobile',
+        country_served: 'USA',
+        timestamp: ISODate('2024-11-06T23:12:36.000Z'),
+        bid_amount: 0.5,
+        ad_cost: 0.42,
+        clicks: []
+      },
+      {
+        impression_id: '19c489b9-6c8c-4808-8d1e-f5401c4f7765',
+        campaign_id: 341,
+        campaign_name: 'Campaign_15',
+        advertiser_name: 'Advertiser_3',
+        ad_slot_size: '300x250',
+        device: 'Desktop',
+        country_served: 'USA',
+        timestamp: ISODate('2024-11-24T16:13:11.000Z'),
+        bid_amount: 2.96,
+        ad_cost: 2.69,
+        clicks: []
+      },
+      {
+        impression_id: '1a8d6dc4-cdf1-4637-a25b-bdd348b54ca4',
+        campaign_id: 229,
+        campaign_name: 'Campaign_348',
+        advertiser_name: 'Advertiser_37',
+        ad_slot_size: '300x250',
+        device: 'Mobile',
+        country_served: 'USA',
+        timestamp: ISODate('2024-11-21T10:46:41.000Z'),
+        bid_amount: 3.84,
+        ad_cost: 2.91,
+        clicks: []
+      },
+      {
+        impression_id: '21d1a509-62db-4a1e-a6c5-deb2fa0587e8',
+        campaign_id: 517,
+        campaign_name: 'Campaign_810',
+        advertiser_name: 'Advertiser_82',
+        ad_slot_size: '728x90',
+        device: 'Mobile',
+        country_served: 'USA',
+        timestamp: ISODate('2024-11-05T14:30:51.000Z'),
+        bid_amount: 1.49,
+        ad_cost: 1.39,
+        clicks: [
+          {
+            click_id: '21d1a509-62db-4a1e-a6c5-deb2fa0587e8-click',
+            click_timestamp: ISODate('2024-11-05T14:34:59.000Z'),
+            ad_revenue: 3.69
+          }
+        ]
+      },
+      {
+        impression_id: 'cb180e5e-2ec4-461b-8bca-7a6baf8bad4d',
+        campaign_id: 188,
+        campaign_name: 'Campaign_304',
+        advertiser_name: 'Advertiser_33',
+        ad_slot_size: '300x250',
+        device: 'Tablet',
+        country_served: 'USA',
+        timestamp: ISODate('2024-10-17T20:07:59.000Z'),
+        bid_amount: 3.28,
+        ad_cost: 2.79,
+        clicks: []
+      },
+      {
+        impression_id: 'effdf7b1-6419-4485-a341-a88b48542a0e',
+        campaign_id: 932,
+        campaign_name: 'Campaign_697',
+        advertiser_name: 'Advertiser_69',
+        ad_slot_size: '728x90',
+        device: 'Tablet',
+        country_served: 'USA',
+        timestamp: ISODate('2024-10-17T09:01:36.000Z'),
+        bid_amount: 3.84,
+        ad_cost: 3.53,
+        clicks: []
+      }
+    ]
+  }
+]
+adtech_db> db.user_engagements.find(
+|   { _id: 10 },
+|   {
+|     _id: 1,
+|     age: 1,
+|     gender: 1,
+|     country: 1,
+|     signup_date: 1,
+|     interests: 1,
+|     impressions: 1
+|   }
+| ).pretty();
+[
+  {
+    _id: 10,
+    age: 60,
+    gender: 'Female',
+    country: 'USA',
+    signup_date: ISODate('2022-08-04T00:00:00.000Z'),
+    interests: [ 'Gaming', 'Sports' ],
+    impressions: [
+      {
+        impression_id: '6fdfb717-0457-489a-8615-899cf9770193',
+        campaign_id: 585,
+        campaign_name: 'Campaign_495',
+        advertiser_name: 'Advertiser_50',
+        ad_slot_size: '300x250',
+        device: 'Mobile',
+        country_served: 'USA',
+        timestamp: ISODate('2024-10-26T23:06:46.000Z'),
+        bid_amount: 2.73,
+        ad_cost: 2.17,
+        clicks: []
+      },
+      {
+        impression_id: 'b593f583-e15b-4966-ba16-81232175c0b5',
+        campaign_id: 476,
+        campaign_name: 'Campaign_458',
+        advertiser_name: 'Advertiser_47',
+        ad_slot_size: '300x250',
+        device: 'Mobile',
+        country_served: 'USA',
+        timestamp: ISODate('2024-10-07T11:06:17.000Z'),
+        bid_amount: 1.87,
+        ad_cost: 1.59,
+        clicks: [
+          {
+            click_id: 'b593f583-e15b-4966-ba16-81232175c0b5-click',
+            click_timestamp: ISODate('2024-10-07T11:09:51.000Z'),
+            ad_revenue: 3.26
+          }
+        ]
+      },
+      {
+        impression_id: '682ee5a8-40b4-45cb-a2d5-f4a4da8c50fd',
+        campaign_id: 975,
+        campaign_name: 'Campaign_944',
+        advertiser_name: 'Advertiser_94',
+        ad_slot_size: '728x90',
+        device: 'Desktop',
+        country_served: 'USA',
+        timestamp: ISODate('2024-11-14T22:25:37.000Z'),
+        bid_amount: 1.25,
+        ad_cost: 1.06,
+        clicks: []
+      },
+      {
+        impression_id: 'ac918c9f-e217-49ce-a18e-98d8f374763c',
+        campaign_id: 930,
+        campaign_name: 'Campaign_31',
+        advertiser_name: 'Advertiser_4',
+        ad_slot_size: '300x250',
+        device: 'Tablet',
+        country_served: 'USA',
+        timestamp: ISODate('2024-10-24T12:50:15.000Z'),
+        bid_amount: 1.08,
+        ad_cost: 0.95,
+        clicks: []
+      },
+      {
+        impression_id: 'cc4f4bc2-5c63-4952-9f61-88e70b82d49d',
+        campaign_id: 842,
+        campaign_name: 'Campaign_281',
+        advertiser_name: 'Advertiser_30',
+        ad_slot_size: '300x250',
+        device: 'Mobile',
+        country_served: 'USA',
+        timestamp: ISODate('2024-10-18T19:58:04.000Z'),
+        bid_amount: 1.92,
+        ad_cost: 1.59,
+        clicks: []
+      },
+      {
+        impression_id: '29f40828-b9a1-4b01-be22-d4d5e553baa7',
+        campaign_id: 58,
+        campaign_name: 'Campaign_837',
+        advertiser_name: 'Advertiser_84',
+        ad_slot_size: '728x90',
+        device: 'Tablet',
+        country_served: 'USA',
+        timestamp: ISODate('2024-12-06T07:33:07.000Z'),
+        bid_amount: 2.58,
+        ad_cost: 1.83,
+        clicks: []
+      },
+      {
+        impression_id: '369e774d-e5cd-416f-8c75-f2410b1c87d6',
+        campaign_id: 91,
+        campaign_name: 'Campaign_768',
+        advertiser_name: 'Advertiser_76',
+        ad_slot_size: '160x600',
+        device: 'Desktop',
+        country_served: 'USA',
+        timestamp: ISODate('2024-10-18T06:26:44.000Z'),
+        bid_amount: 4.58,
+        ad_cost: 4.05,
+        clicks: []
+      },
+      {
+        impression_id: 'dc722bd8-8763-4a62-8c4e-d5b59088e0b4',
+        campaign_id: 773,
+        campaign_name: 'Campaign_980',
+        advertiser_name: 'Advertiser_98',
+        ad_slot_size: '728x90',
+        device: 'Tablet',
+        country_served: 'USA',
+        timestamp: ISODate('2024-10-19T05:19:23.000Z'),
+        bid_amount: 3.3,
+        ad_cost: 2.65,
+        clicks: []
+      },
+      {
+        impression_id: '37fa484c-fe82-426c-b181-1861bc2a15ef',
+        campaign_id: 709,
+        campaign_name: 'Campaign_516',
+        advertiser_name: 'Advertiser_52',
+        ad_slot_size: '300x250',
+        device: 'Mobile',
+        country_served: 'USA',
+        timestamp: ISODate('2024-10-30T23:11:15.000Z'),
+        bid_amount: 2.09,
+        ad_cost: 1.88,
+        clicks: []
+      },
+      {
+        impression_id: '1499321f-f859-4e80-a2dc-a2fc1ff2563c',
+        campaign_id: 228,
+        campaign_name: 'Campaign_263',
+        advertiser_name: 'Advertiser_28',
+        ad_slot_size: '300x250',
+        device: 'Desktop',
+        country_served: 'USA',
+        timestamp: ISODate('2024-10-29T17:56:01.000Z'),
+        bid_amount: 3.04,
+        ad_cost: 2.37,
+        clicks: []
+      },
+      {
+        impression_id: '3da875bb-33fd-4224-96dc-e57f59dbdfdb',
+        campaign_id: 432,
+        campaign_name: 'Campaign_440',
+        advertiser_name: 'Advertiser_45',
+        ad_slot_size: '160x600',
+        device: 'Mobile',
+        country_served: 'USA',
+        timestamp: ISODate('2024-10-27T17:57:09.000Z'),
+        bid_amount: 2.16,
+        ad_cost: 1.67,
+        clicks: []
+      },
+      {
+        impression_id: 'bea06182-3e71-46fe-9c5f-6c6c7bc96220',
+        campaign_id: 682,
+        campaign_name: 'Campaign_44',
+        advertiser_name: 'Advertiser_6',
+        ad_slot_size: '160x600',
+        device: 'Mobile',
+        country_served: 'USA',
+        timestamp: ISODate('2024-11-06T23:12:36.000Z'),
+        bid_amount: 0.5,
+        ad_cost: 0.42,
+        clicks: []
+      },
+      {
+        impression_id: '19c489b9-6c8c-4808-8d1e-f5401c4f7765',
+        campaign_id: 341,
+        campaign_name: 'Campaign_15',
+        advertiser_name: 'Advertiser_3',
+        ad_slot_size: '300x250',
+        device: 'Desktop',
+        country_served: 'USA',
+        timestamp: ISODate('2024-11-24T16:13:11.000Z'),
+        bid_amount: 2.96,
+        ad_cost: 2.69,
+        clicks: []
+      },
+      {
+        impression_id: '1a8d6dc4-cdf1-4637-a25b-bdd348b54ca4',
+        campaign_id: 229,
+        campaign_name: 'Campaign_348',
+        advertiser_name: 'Advertiser_37',
+        ad_slot_size: '300x250',
+        device: 'Mobile',
+        country_served: 'USA',
+        timestamp: ISODate('2024-11-21T10:46:41.000Z'),
+        bid_amount: 3.84,
+        ad_cost: 2.91,
+        clicks: []
+      },
+      {
+        impression_id: '21d1a509-62db-4a1e-a6c5-deb2fa0587e8',
+        campaign_id: 517,
+        campaign_name: 'Campaign_810',
+        advertiser_name: 'Advertiser_82',
+        ad_slot_size: '728x90',
+        device: 'Mobile',
+        country_served: 'USA',
+        timestamp: ISODate('2024-11-05T14:30:51.000Z'),
+        bid_amount: 1.49,
+        ad_cost: 1.39,
+        clicks: [
+          {
+            click_id: '21d1a509-62db-4a1e-a6c5-deb2fa0587e8-click',
+            click_timestamp: ISODate('2024-11-05T14:34:59.000Z'),
+            ad_revenue: 3.69
+          }
+        ]
+      },
+      {
+        impression_id: 'cb180e5e-2ec4-461b-8bca-7a6baf8bad4d',
+        campaign_id: 188,
+        campaign_name: 'Campaign_304',
+        advertiser_name: 'Advertiser_33',
+        ad_slot_size: '300x250',
+        device: 'Tablet',
+        country_served: 'USA',
+        timestamp: ISODate('2024-10-17T20:07:59.000Z'),
+        bid_amount: 3.28,
+        ad_cost: 2.79,
+        clicks: []
+      },
+      {
+        impression_id: 'effdf7b1-6419-4485-a341-a88b48542a0e',
+        campaign_id: 932,
+        campaign_name: 'Campaign_697',
+        advertiser_name: 'Advertiser_69',
+        ad_slot_size: '728x90',
+        device: 'Tablet',
+        country_served: 'USA',
+        timestamp: ISODate('2024-10-17T09:01:36.000Z'),
+        bid_amount: 3.84,
+        ad_cost: 3.53,
+        clicks: []
+      }
+    ]
+  }
+]
+adtech_db>
