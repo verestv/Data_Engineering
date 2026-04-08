@@ -18,11 +18,11 @@ This repository implements a MongoDB‑based user engagement store for an adtech
 - `load_to_mongo.py`  
   Python ETL script that:
   - connects to MongoDB,  
-  - loads CSVs (users, campaigns, impressions, clicks, etc.),  
+  - loads same CSVs which were made earlier for mysql load (users, campaigns, impressions, clicks, etc.),  
   - builds lookup dictionaries (countries, interests, advertisers, campaigns),  
   - inserts base user documents (one per user with demographics + interests + empty `impressions`),  
   - streams `impressions.csv` in chunks and `$push`es denormalized impressions (with embedded clicks) into each user document.  
-  This script is the main data‑loading pipeline and is designed to be memory‑efficient.
+  
 
 ## Query result files (`init/query_results/1.txt` – `5.txt`)
 
