@@ -83,4 +83,4 @@ Then run queries manually from `cql/`
 
 ## Note about Queries 2, 4 and 5
 
-Queries 2, 4 and 5 use `SUM()` and `GROUP BY` correctly in CQL, but Cassandra cannot sort aggregated values with `ORDER BY total_spend` or `ORDER BY total_clicks`. Because of that, these queries are run in `cqlsh` to aggregate the results, and then the output is sorted outside CQL using bash (`sort`) to show the real top 5 / top 10. This is a Cassandra limitation, not a problem with the dataset. [cite:20]
+Queries 2, 4 and 5 use `SUM()` and `GROUP BY` correctly in CQL, but Cassandra cannot sort aggregated values with `ORDER BY total_spend` or `ORDER BY total_clicks`. Because of that, these queries are run in `cqlsh` to aggregate the results, and then the output is sorted outside CQL using bash (`sort`) to show the real top 5 / top 10.
