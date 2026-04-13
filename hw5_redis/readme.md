@@ -94,6 +94,6 @@ Run the benchmark (15 requests per endpoint by default):
 cd benchmark/
 python benchmark.py --host http://localhost:8000 --runs 15
 ```
-results in `benchmark/bm_results.txt
+results in `benchmark/results.txt`
 
 
