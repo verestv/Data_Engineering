@@ -1,30 +1,27 @@
-(venv) ivan@DESKTOP-HLUUP8P:~/Data_Eng/hw5_redis$ python benchmark/benchmark.py 
+(venv) ivan@DESKTOP-HLUUP8P:~/Data_Eng/hw5_redis$ python benchmark/benchmark.py --host http://localhost:8000 --runs 15
 
 =================================================================
   AdTech API Benchmark  |  15 requests per endpoint
   Host: http://localhost:8000
 =================================================================
 
-► Campaign Performance  (http://localhost:8000/campaign/166/performance)
-  MISS (cold / DB)  avg=3038.1ms  min=3038.1ms  max=3038.1ms  n=1
-  HIT  (cached)     avg=4.5ms  min=3.8ms  max=5.6ms  n=14
+► Campaign Performance  (http://localhost:8000/campaign/160/performance)
+  MISS (cold / DB)  avg=3681.0ms  min=3681.0ms  max=3681.0ms  n=1
+  HIT  (cached)     avg=3.5ms  min=3.3ms  max=4.2ms  n=14
 
-► Advertiser Spending  (http://localhost:8000/advertiser/3/spending)
-  MISS (cold / DB)  avg=34311.1ms  min=34311.1ms  max=34311.1ms  n=1
-  HIT  (cached)     avg=3.8ms  min=3.2ms  max=4.7ms  n=14
+► Advertiser Spending  (http://localhost:8000/advertiser/4/spending)
+  MISS (cold / DB)  avg=56620.3ms  min=56620.3ms  max=56620.3ms  n=1
+  HIT  (cached)     avg=6.4ms  min=5.6ms  max=7.4ms  n=14
 
-► User Engagements  (http://localhost:8000/user/583398/engagements)
-  MISS (cold / DB)  avg=34.4ms  min=34.4ms  max=34.4ms  n=1
-  HIT  (cached)     avg=4.6ms  min=4.3ms  max=5.1ms  n=14
+► User Engagements  (http://localhost:8000/user/583391/engagements)
+  MISS (cold / DB)  avg=28.1ms  min=28.1ms  max=28.1ms  n=1
+  HIT  (cached)     avg=7.7ms  min=6.7ms  max=9.9ms  n=14
 
 =================================================================
   SUMMARY TABLE
 =================================================================
 Endpoint                          MISS (ms)     HIT (ms)    Speedup
 -----------------------------------------------------------------
-Campaign Performance                 3038.1          4.5     671.4x
-Advertiser Spending                 34311.1          3.8    9028.1x
-User Engagements                       34.4          4.6       7.5x
-=================================================================
-
-(venv) ivan@DESKTOP-HLUUP8P:~/Data_Eng/hw5_redis$
+Campaign Performance                 3681.0          3.5    1042.4x
+Advertiser Spending                 56620.3          6.4    8909.0x
+User Engagements                       28.1          7.7       3.6x
