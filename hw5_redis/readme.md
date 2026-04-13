@@ -2,14 +2,14 @@
 
 This homework builds a FastAPI REST API that serves advertising analytics queries backed by MySQL. Redis is used as a read-through cache in front of the database to reduce latency and DB load.
 
-The MySQL container reuses the existing data volume from Homework 1 — no re-loading of data is needed.
+The MySQL container reuses the existing data volume from Homework 1 (hw1_fixed) repo
 
 ---
 
 ## Folder Structure
 
 - `docker-compose.yml`  
-  Spins up three containers: `mysql_hw5` (existing volume), `redis_hw5`, `api_hw5`
+  Spins up three containers: `adtech_mysql_hw5` (existing volume), `redis_hw5`, `api_hw5`
 
 - `app/main.py`  
   FastAPI application with 3 endpoints and read-through Redis cache logic
@@ -28,6 +28,7 @@ The MySQL container reuses the existing data volume from Homework 1 — no re-lo
 
 - `benchmark/benchmark.py`  
   Measures MISS vs HIT response times across all 3 endpoints and prints a summary table
+  Details with benchmark results are in `benchmark` folder
 
 ---
 
@@ -50,24 +51,19 @@ Each response includes a `"cache": "HIT"` or `"cache": "MISS"` field.
 docker compose up -d --build
 ```
 
-Check that all three are running:
-
-```bash
-docker ps
-```
-
-Wait ~15 seconds for MySQL to be ready (the API container waits for the healthcheck automatically).
-
 ---
 
 ## Step 2 — Test Endpoints
 
 ```bash
 # Campaign performance
-curl http://localhost:8000/campaign/166/performance
+curl http://localhost:8000/campaign/159/performance
+output: {"campaign_id":159,"campaign_name":"Campaign_137","advertiser_name":"Advertiser_14","total_impressions":9832,"total_clicks":485,"ctr_percent":4.932
 
 # Advertiser spending
-curl http://localhost:8000/advertiser/3/spending
+curl http://localhost:8000/advertiser/2/spending
+output:
+{"advertiser_id":2,"advertiser_name":"Advertiser_10","total_campaigns":11,"total_impressions":108200,"total_clicks":5239,"total_ad_spend":245452.87,"total_ad_revenue":27568.55,"cache":"MISS"}
 
 # User engagements
 curl http://localhost:8000/user/583398/engagements
@@ -76,7 +72,7 @@ curl http://localhost:8000/user/583398/engagements
 Or open the interactive docs:
 
 ```
-http://localhost:8000/docs
+http://localhost:8000/docs (screenshot: fastapi_gui.png)
 ```
 
 First call returns `"cache": "MISS"` — data fetched from MySQL.  
@@ -98,60 +94,6 @@ Run the benchmark (15 requests per endpoint by default):
 cd benchmark/
 python benchmark.py --host http://localhost:8000 --runs 15
 ```
+results in `benchmark/bm_results.txt
 
----
 
-## Benchmark Results
-
-| Endpoint | MISS avg (ms) | HIT avg (ms) | Speedup |
-|---|---|---|---|
-| Campaign Performance | ~180 ms | ~3 ms | ~60x |
-| Advertiser Spending | ~220 ms | ~3 ms | ~73x |
-| User Engagements | ~95 ms | ~3 ms | ~32x |
-
-> Actual numbers depend on hardware. MISS time includes full MySQL JOIN query. HIT time is a Redis GET — typically 1–4 ms regardless of data size.
-
----
-
-## Cache Behaviour
-
-The cache follows a **read-through** pattern:
-
-```
-Request
-  │
-  ▼
-Redis GET key
-  ├─ HIT  → return cached JSON immediately
-  └─ MISS → query MySQL
-              │
-              ▼
-            store result in Redis with TTL
-              │
-              ▼
-            return JSON to client
-```
-
-Redis keys used:
-
-| Key pattern | TTL |
-|---|---|
-| `campaign:{id}:performance` | 30 seconds |
-| `advertiser:{id}:spending` | 300 seconds (5 min) |
-| `user:{id}:engagements` | 60 seconds |
-
----
-
-## Cleanup
-
-Stop and remove containers (keeps the MySQL volume intact):
-
-```bash
-docker compose down
-```
-
-To also flush Redis cache manually:
-
-```bash
-docker exec redis_hw5 redis-cli FLUSHALL
-```
